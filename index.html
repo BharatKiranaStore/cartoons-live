@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doraemon Live | Cartoon Streaming</title>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #071b36;
+  color: white;
+  overflow-x: hidden;
+}
+
+header {
+  height: 75px;
+  padding: 0 6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #092b50;
+  border-bottom: 1px solid #174d7d;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: 900;
+  color: #45c7ff;
+}
+
+.logo span {
+  color: white;
+}
+
+.live-status {
+  background: #e92345;
+  padding: 9px 17px;
+  border-radius: 30px;
+  font-size: 12px;
+  font-weight: bold;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  50% { opacity: .55; }
+}
+
+.hero {
+  text-align: center;
+  padding: 38px 15px 20px;
+  background: radial-gradient(circle, #14558b, #071b36 75%);
+}
+
+.hero h1 {
+  font-size: clamp(27px, 5vw, 45px);
+  margin-bottom: 10px;
+}
+
+.hero p {
+  color: #a9d8ff;
+  font-size: 15px;
+}
+
+.characters {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding: 20px;
+  font-size: 65px;
+}
+
+.character {
+  animation: float 3s ease-in-out infinite;
+}
+
+.character:nth-child(2) { animation-delay: .5s; }
+.character:nth-child(3) { animation-delay: 1s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-13px); }
+}
+
+main {
+  width: 92%;
+  max-width: 1150px;
+  margin: 15px auto 50px;
+}
+
+.player-container {
+  background: #020b17;
+  padding: 10px;
+  border-radius: 18px;
+  border: 1px solid #2472ae;
+  box-shadow: 0 0 35px #168bdb30;
+}
+
+.player {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: black;
+}
+
+.player-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 20px;
+  background: #020b17;
+  z-index: 2;
+}
+
+.player-overlay h2 {
+  font-size: 25px;
+  margin-bottom: 12px;
+}
+
+.player-overlay p {
+  color: #a7c7e5;
+  font-size: 14px;
+}
+
+.watch-button {
+  margin-top: 20px;
+  border: none;
+  background: #12a8f4;
+  padding: 14px 30px;
+  border-radius: 30px;
+  color: white;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.watch-button:hover {
+  background: #087bc1;
+}
+
+.stream-info {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 17px 5px;
+  color: #c5e5ff;
+  font-size: 14px;
+}
+
+.info-card {
+  background: #10365c;
+  border: 1px solid #205c8b;
+  border-radius: 14px;
+  padding: 23px;
+  margin-top: 22px;
+}
+
+.info-card h2 {
+  color: #55caff;
+  margin-bottom: 12px;
+}
+
+.info-card p {
+  color: #c0d9ef;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+footer {
+  text-align: center;
+  padding: 28px 15px;
+  background: #041326;
+  color: #91b9dc;
+  font-size: 13px;
+}
+
+@media(max-width:600px) {
+  header { padding: 0 4%; height: 65px; }
+  .logo { font-size: 20px; }
+  .characters { font-size: 45px; gap: 15px; }
+  main { width: 95%; }
+  .player-container { padding: 5px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">DORAEMON <span>LIVE</span></div>
+  <div class="live-status">● LIVE</div>
+</header>
+
+<section class="hero">
+  <h1>Welcome to Cartoon World!</h1>
+  <p>Your favourite cartoon streaming destination.</p>
+
+  <div class="characters">
+    <div class="character">🤖</div>
+    <div class="character">🐱</div>
+    <div class="character">🚀</div>
+    <div class="character">⭐</div>
+  </div>
+</section>
+
+<main>
+
+  <div class="player-container">
+    <div class="player">
+
+      <video id="video" controls
+        playsinline
+        preload="metadata">
+      </video>
+
+      <div class="player-overlay" id="overlay">
+        <h2>🎬 Doraemon Live</h2>
+        <p id="message">Ready to watch your favourite cartoons?</p>
+        <button class="watch-button" onclick="startStream()">
+          ▶ WATCH LIVE
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="stream-info">
+    <span>🔴 Live Cartoon Channel</span>
+    <span>📺 HD Streaming</span>
+    <span>🌍 Watch Anywhere</span>
+  </div>
+
+  <section class="info-card">
+    <h2>🎉 Welcome, Cartoon Fans!</h2>
+    <p>
+      Enter the wonderful world of cartoons!
+      Enjoy your favourite animated adventures
+      with a simple and comfortable viewing experience.
+      Sit back, relax and enjoy the show.
+    </p>
+  </section>
+
+  <section class="info-card">
+    <h2>📡 Streaming Information</h2>
+    <p>
+      Stream powered by SSH101.
+      For the best experience, use a stable internet
+      connection and a modern browser.
+    </p>
+  </section>
+
+</main>
+
+<footer>
+  <p>Cartoon Live Streaming Website</p>
+  <p style="margin-top:8px">
+    Fan-made streaming interface.
+  </p>
+</footer>
+
+<script>
+const video = document.getElementById("video");
+const overlay = document.getElementById("overlay");
+const message = document.getElementById("message");
+
+// HLS playback URL previously supplied
+// RTMP is used by OBS, not directly by browsers.
+const STREAM_URL =
+"https://usb.bozztv.com/bharatkirana53/index.m3u8";
+
+let hls;
+
+function startStream() {
+
+  message.textContent = "Connecting to live stream...";
+
+  if (Hls.isSupported()) {
+
+    if (hls) hls.destroy();
+
+    hls = new Hls({
+      enableWorker: true,
+      lowLatencyMode: true
+    });
+
+    hls.loadSource(STREAM_URL);
+    hls.attachMedia(video);
+
+    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+      overlay.style.display = "none";
+      video.play().catch(() => {
+        overlay.style.display = "flex";
+        message.textContent =
+          "Stream ready. Press play to start watching.";
+      });
+    });
+
+    hls.on(Hls.Events.ERROR, function(event, data) {
+      if (data.fatal) {
+        message.textContent =
+          "Stream unavailable. Please try again later.";
+        overlay.style.display = "flex";
+        hls.destroy();
+        hls = null;
+      }
+    });
+
+  } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+
+    video.src = STREAM_URL;
+
+    video.addEventListener("loadedmetadata", function() {
+      overlay.style.display = "none";
+      video.play().catch(() => {
+        overlay.style.display = "flex";
+      });
+    }, { once: true });
+
+    video.onerror = function() {
+      overlay.style.display = "flex";
+      message.textContent = "Stream unavailable.";
+    };
+
+  } else {
+    message.textContent = "Your browser does not support HLS.";
+  }
+}
+
+video.addEventListener("playing", () => {
+  overlay.style.display = "none";
+});
+
+video.addEventListener("error", () => {
+  overlay.style.display = "flex";
+  message.textContent = "Unable to play stream. Try again.";
+});
+</script>
+
+</body>
+</html>
